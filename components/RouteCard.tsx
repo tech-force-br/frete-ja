@@ -37,7 +37,7 @@ export default function RouteCard({ route, onContact }: Props) {
         </div>
         <button
           onClick={() => onContact(route)}
-          className="bg-white border border-gray-300 hover:bg-gray-100 px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center gap-2 transition-colors"
+          className="bg-white border border-gray-300 hover:bg-gray-100 px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
         >
           <Phone size={18} />
           Contatar

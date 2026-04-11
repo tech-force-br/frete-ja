@@ -24,7 +24,7 @@ export default function Header({
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 cursor-pointer">
           <div className="text-3xl text-blue-600">
             <Truck size={36} strokeWidth={2.2} />
           </div>
@@ -41,7 +41,7 @@ export default function Header({
           {/* Início Button */}
           <button
             onClick={() => onPageChange("home")}
-            className={`nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors ${
+            className={`nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer ${
               currentPage === "home" ? "active bg-gray-100" : ""
             }`}
           >
@@ -52,7 +52,7 @@ export default function Header({
           {isLoggedIn && (
             <button
               onClick={() => onPageChange("my-routes")}
-              className={`nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors ${
+              className={`nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer ${
                 currentPage === "my-routes" ? "active bg-gray-100" : ""
               }`}
             >
@@ -64,7 +64,7 @@ export default function Header({
           {isLoggedIn && (
             <button
               onClick={onLogout}
-              className="text-red-600 hover:text-red-700 font-medium px-4 py-2 transition-colors flex items-center gap-1.5"
+              className="text-red-600 hover:text-red-700 font-medium px-4 py-2 transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <LogOut size={18} />
               Sair
@@ -75,10 +75,10 @@ export default function Header({
           {!isLoggedIn && (
             <button
               onClick={onLogin}
-              className="bg-blue-600 text-white px-6 py-2.5 rounded-2xl font-semibold hover:bg-blue-700 transition-all flex items-center gap-2"
+              className="bg-blue-600 text-white px-6 py-2.5 rounded-2xl font-semibold hover:bg-blue-700 transition-all flex items-center gap-2 cursor-pointer"
             >
               <LogIn size={18} />
-              <span>Entrar como Empresa</span>
+              <span>Entrar</span>
             </button>
           )}
         </nav>

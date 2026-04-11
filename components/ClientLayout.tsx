@@ -54,9 +54,9 @@ export default function ClientLayout({
       />
 
       <LoginModal
-            isOpen={showLoginModal}
-            onClose={() => setShowLoginModal(false)}
-            onSuccessLogin={handleLoginSuccess}
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccessLogin={handleLoginSuccess}
       />
 
       <main>{children}</main>
