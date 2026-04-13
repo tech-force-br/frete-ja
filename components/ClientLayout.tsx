@@ -1,17 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import LoginModal from "@/components/LoginModal";
 
-type Page = "home" | "my-routes";
+type AppPage = "/" | "/route-manager";
 
 export default function ClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [currentPage, setCurrentPage] = useState<Page>("home");
+
+  const router = useRouter();
+
+  const [currentPage, setCurrentPage] = useState<AppPage>("/");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [companyName, setCompanyName] = useState("");
@@ -22,18 +26,16 @@ export default function ClientLayout({
 
   function handleLogout() {
     setIsLoggedIn(false);
-    setCurrentPage("home");
-  }
-
-  function handlePageChange(page: Page) {
-    setCurrentPage(page);
+    setCurrentPage("/");
+    router.push("/");
   }
 
   function handleLoginSuccess(company: string) {
     setCompanyName(company);
     setIsLoggedIn(true);
     setShowLoginModal(false);
-    setCurrentPage("my-routes");
+
+    router.push("/route-manager");
 
     const toast = document.createElement("div");
     toast.className =
@@ -46,8 +48,6 @@ export default function ClientLayout({
   return (
     <>
       <Header
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
         isLoggedIn={isLoggedIn}
         onLogin={handleLogin}
         onLogout={handleLogout}

@@ -2,7 +2,7 @@
 
 import { states } from "@/lib/data";
 
-type RouteFiltersProps = {
+interface RouteFiltersProps {
   originState: string;
   setOriginState: (value: string) => void;
   originCity: string;

@@ -1,21 +1,15 @@
 "use client";
 
 import { Truck, LogOut, LogIn } from "lucide-react";
-import { useState } from "react";
-
-type Page = "home" | "my-routes";
+import Link from 'next/link';
 
 interface HeaderProps {
-  currentPage: Page;
-  onPageChange: (page: Page) => void;
   isLoggedIn: boolean;
   onLogin: () => void;
   onLogout: () => void;
 }
 
 export default function Header({
-  currentPage,
-  onPageChange,
   isLoggedIn,
   onLogin,
   onLogout,
@@ -24,40 +18,40 @@ export default function Header({
     <header className="bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-3 cursor-pointer">
-          <div className="text-3xl text-blue-600">
-            <Truck size={36} strokeWidth={2.2} />
+        <Link href="/">
+          <div className="flex items-center gap-3 cursor-pointer">
+            <div className="text-3xl text-blue-600">
+              <Truck size={36} strokeWidth={2.2} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-blue-700">
+                FreteJá
+              </h1>
+              <p className="text-xs text-gray-500 -mt-1">Rotas de Carga Brasil</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-blue-700">
-              FreteJá
-            </h1>
-            <p className="text-xs text-gray-500 -mt-1">Rotas de Carga Brasil</p>
-          </div>
-        </div>
+        </Link>
 
         {/* Navigation */}
         <nav className="flex items-center gap-6 text-sm font-medium">
           {/* Início Button */}
-          <button
-            onClick={() => onPageChange("home")}
-            className={`nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer ${
-              currentPage === "home" ? "active bg-gray-100" : ""
-            }`}
-          >
-            Início
-          </button>
+          <Link href="/">
+            <button
+              className="nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+            >
+              Início
+            </button>
+          </Link>
 
           {/* Minhas Rotas Button - only show when logged in */}
           {isLoggedIn && (
-            <button
-              onClick={() => onPageChange("my-routes")}
-              className={`nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer ${
-                currentPage === "my-routes" ? "active bg-gray-100" : ""
-              }`}
-            >
-              Minhas Rotas
-            </button>
+            <Link href="/route-manager">
+              <button
+                className="nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
+              >
+                Minhas Rotas
+              </button>
+            </Link>
           )}
 
           {/* Logout Button */}

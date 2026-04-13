@@ -72,14 +72,14 @@ export default function LoginModal({
         <div className="flex border-t">
           <button
             onClick={onClose}
-            className="flex-1 py-5 text-gray-600 font-medium hover:bg-gray-100"
+            className="flex-1 py-5 text-gray-600 font-medium hover:bg-gray-100 cursor-pointer"
           >
             Cancelar
           </button>
 
           <button
             onClick={handleLogin}
-            className="flex-1 py-5 bg-blue-600 text-white font-semibold hover:bg-blue-700"
+            className="flex-1 py-5 bg-blue-600 text-white font-semibold hover:bg-blue-700 cursor-pointer"
           >
             Entrar
           </button>
