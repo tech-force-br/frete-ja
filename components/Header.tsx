@@ -45,7 +45,7 @@ export default function Header({
 
           {/* Minhas Rotas Button - only show when logged in */}
           {isLoggedIn && (
-            <Link href="/route-manager">
+            <Link href="/my-routes">
               <button
                 className="nav-link px-4 py-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
               >

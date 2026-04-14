@@ -1,10 +1,10 @@
-import RouteManagerPage from "@/components/RouteManagerPage";
+import RouteManagerComponent from "@/components/RouteManager";
 
 export default function RouteManager() {
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-10">
-      <RouteManagerPage />
+      <RouteManagerComponent currentUser={"TEST-USER"}/>
     </main>
   );
 }

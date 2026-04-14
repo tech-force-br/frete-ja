@@ -1,12 +1,19 @@
-import { Phone } from "lucide-react";
+import { Phone, Trash2 } from "lucide-react";
 import { Route } from "@/types";
 
 interface Props {
   route: Route;
   onContact: (route: Route) => void;
+  onDelete?: (id: number) => void;
+  isMyRoute?: boolean;
 }
 
-export default function RouteCard({ route, onContact }: Props) {
+export default function RouteCard({
+  route,
+  onContact,
+  onDelete,
+  isMyRoute = false
+}: Props) {
   return (
     <div className="route-card bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
       <div className="px-6 pt-6 pb-4">
@@ -35,13 +42,28 @@ export default function RouteCard({ route, onContact }: Props) {
           <p className="font-medium">{route.company}</p>
           <p className="text-xs text-gray-500">{route.contact}</p>
         </div>
-        <button
-          onClick={() => onContact(route)}
-          className="bg-white border border-gray-300 hover:bg-gray-100 px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
-        >
-          <Phone size={18} />
-          Contatar
-        </button>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => onContact(route)}
+            className="bg-white border border-gray-300 hover:bg-gray-100 px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
+          >
+            <Phone size={18} />
+            Contatar
+          </button>
+
+          {isMyRoute && onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(route.id);
+              }}
+              className="p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-2xl transition-all cursor-pointer"
+            >
+              <Trash2 size={20} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
