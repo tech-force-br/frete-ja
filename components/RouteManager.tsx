@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Plus } from 'lucide-react';
+import RouteFilters from '@/components/RouteFilters';
 import RouteCard from '@/components/RouteCard';
 import AddRouteModal from '@/components/AddRouteModal';
 import ContactModal from '@/components/ContactModal';
@@ -20,7 +21,32 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
   const [route, setRoute] = useState<Route | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [routeToDelete, setRouteToDelete] = useState<Route | null>(null);
-  const { allRoutes, myRoutes, saveToLocalStorage } = useLocalStorageRoutes(currentUser);
+  const { myRoutes, saveToLocalStorage } = useLocalStorageRoutes(currentUser);
+
+  const [originState, setOriginState] = useState("");
+  const [originCity, setOriginCity] = useState("");
+  const [destState, setDestState] = useState("");
+  const [destCity, setDestCity] = useState("");
+
+  const filteredRoutes = useMemo(() => {
+
+    return myRoutes.filter((route) => {
+
+      const matchesOriginState = !originState || route.originState === originState;
+
+      const matchesOriginCity =
+        !originCity ||
+        route.originCity.toLowerCase().includes(originCity.toLowerCase());
+
+      const matchesDestState = !destState || route.destState === destState;
+
+      const matchesDestCity =
+        !destCity ||
+        route.destCity.toLowerCase().includes(destCity.toLowerCase());
+
+      return matchesOriginState && matchesOriginCity && matchesDestState && matchesDestCity;
+    });
+  }, [myRoutes, originState, originCity, destState, destCity]);
 
   useEffect(() => {
     setMounted(true);
@@ -56,7 +82,7 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
 
   const deleteMyRoute = () => {
     setIsDeleteModalOpen(false);
-    const updatedRoutes = allRoutes.filter((r) => r.id !== routeToDelete?.id);
+    const updatedRoutes = myRoutes.filter((r) => r.id !== routeToDelete?.id);
     saveToLocalStorage(updatedRoutes);
   };
 
@@ -67,6 +93,18 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
 
   return (
     <div className="p-6">
+
+      <RouteFilters
+        originState={originState}
+        setOriginState={setOriginState}
+        originCity={originCity}
+        setOriginCity={setOriginCity}
+        destState={destState}
+        setDestState={setDestState}
+        destCity={destCity}
+        setDestCity={setDestCity}
+      />
+
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">Minhas Rotas</h2>
@@ -81,12 +119,12 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
 
       {/* Routes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {myRoutes.length === 0 ? (
+        {filteredRoutes.length === 0 ? (
           <div className="col-span-3 text-center py-12 text-gray-400">
             <p>Você ainda não tem rotas cadastradas.</p>
           </div>
         ) : (
-          myRoutes.map((route) => (
+          filteredRoutes.map((route) => (
             <RouteCard
               key={route.id}
               route={route}

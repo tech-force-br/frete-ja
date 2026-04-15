@@ -14,13 +14,8 @@ export default function Home() {
 
   const filteredRoutes = useMemo(() => {
 
-    console.log('originState', originState);
-    console.log('destState', destState);
-
     return initialRoutes.filter((route) => {
       const matchesOriginState = !originState || route.originState === originState;
-
-      console.log('matchesOriginState', matchesOriginState);
 
       const matchesOriginCity =
         !originCity ||

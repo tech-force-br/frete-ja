@@ -6,38 +6,31 @@ import { Route } from '@/types';
 const STORAGE_KEY = 'minhas-rotas';
 
 export function useLocalStorageRoutes(currentUser: string) {
-  const [allRoutes, setAllRoutes] = useState<Route[]>(() => {
-    // Initial load from localStorage
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
-    }
-    return [];
-  });
+  const [myRoutes, setMyRoutes] = useState<Route[]>([]);
 
-  // Save to localStorage
-  const saveToLocalStorage = (routes: Route[]) => {
-    setAllRoutes(routes);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
-  };
+  // Load from localStorage on mount (client-side only)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
 
-  // Get only my routes (computed)
-  const myRoutes = allRoutes.filter(
-    (route) => route.company === currentUser
-  );
-
-  // Refresh from localStorage (useful if changed in another tab/component)
-  const refreshRoutes = () => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      setAllRoutes(JSON.parse(saved));
+      try {
+        const parsed: Route[] = JSON.parse(saved);
+        // Optional: filter by currentUser if you want to isolate per user
+        // const userRoutes = parsed.filter(r => r.company === currentUser);
+        setMyRoutes(parsed);
+      } catch (e) {
+        console.error('Failed to parse routes from localStorage', e);
+      }
+    }
+  }, [currentUser]); // re-load if user changes (rare)
+
+  const saveToLocalStorage = (routes: Route[]) => {
+    setMyRoutes(routes);                    // ← This triggers re-render
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(routes));
     }
   };
 
-  return {
-    allRoutes,
-    myRoutes,
-    saveToLocalStorage,
-    refreshRoutes,
-  };
+  return { myRoutes, saveToLocalStorage };
 }
