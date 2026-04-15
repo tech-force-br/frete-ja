@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Route } from '@/types';
 
-const STORAGE_KEY = 'my-routes';
+const STORAGE_KEY = 'minhas-rotas';
 
 export function useLocalStorageRoutes(currentUser: string) {
   const [allRoutes, setAllRoutes] = useState<Route[]>(() => {

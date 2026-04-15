@@ -36,7 +36,7 @@ export default function DeleteModal({ isOpen, onCancel, onDelete }: Props) {
             onClick={onDelete}
             className="flex-1 py-4 bg-red-600 text-white font-semibold rounded-2xl hover:bg-red-700 cursor-pointer"
         >
-            Deletar
+            Deletar Rota
         </button>
         </div>
       </div>

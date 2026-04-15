@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import LoginModal from "@/components/LoginModal";
 
-type AppPage = "/" | "/my-routes";
+type AppPage = "/" | "/minhas-rotas";
 
 export default function ClientLayout({
   children,
@@ -35,7 +35,7 @@ export default function ClientLayout({
     setIsLoggedIn(true);
     setShowLoginModal(false);
 
-    router.push("/my-routes");
+    router.push("/minhas-rotas");
 
     const toast = document.createElement("div");
     toast.className =

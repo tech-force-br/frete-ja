@@ -1,6 +1,6 @@
 "use client";
 
-import { states } from "@/lib/data";
+import { states } from "@/lib/states";
 
 interface RouteFiltersProps {
   originState: string;
@@ -23,6 +23,7 @@ export default function RouteFilters({
   destCity,
   setDestCity,
 }: RouteFiltersProps) {
+
   return (
     <div className="bg-white p-6 rounded-3xl shadow-sm mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Estado de Origem */}
@@ -37,8 +38,8 @@ export default function RouteFilters({
         >
           <option value="">Todos os estados</option>
           {states.map((state) => (
-            <option key={state.uf} value={state.uf}>
-              {state.uf} - {state.name}
+            <option key={state.code} value={state.code}>
+              {state.name}
             </option>
           ))}
         </select>
@@ -49,13 +50,23 @@ export default function RouteFilters({
         <label className="block text-sm font-medium text-gray-600 mb-1">
           Cidade de Origem
         </label>
-        <input
-          type="text"
+        <select
           value={originCity}
           onChange={(e) => setOriginCity(e.target.value)}
-          placeholder="Ex: São Paulo"
-          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500"
-        />
+          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white"
+        >
+          <option value="">Todas as cidades</option>
+          {originState &&
+            states
+            .find((state) => state.code === originState)
+            ?.cities
+              .map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+            ))
+          }
+        </select>
       </div>
 
       {/* Estado de Destino */}
@@ -70,8 +81,8 @@ export default function RouteFilters({
         >
           <option value="">Todos os estados</option>
           {states.map((state) => (
-            <option key={state.uf} value={state.uf}>
-              {state.uf} - {state.name}
+            <option key={state.code} value={state.code}>
+              {state.name}
             </option>
           ))}
         </select>
@@ -82,13 +93,23 @@ export default function RouteFilters({
         <label className="block text-sm font-medium text-gray-600 mb-1">
           Cidade de Destino
         </label>
-        <input
-          type="text"
+        <select
           value={destCity}
           onChange={(e) => setDestCity(e.target.value)}
-          placeholder="Ex: Rio de Janeiro"
-          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500"
-        />
+          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white"
+        >
+          <option value="">Todas as cidades</option>
+          {destState &&
+            states
+            .find((state) => state.code === destState)
+            ?.cities
+              .map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+            ))
+          }
+        </select>
       </div>
     </div>
   );
