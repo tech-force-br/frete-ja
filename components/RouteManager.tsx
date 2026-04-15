@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import RouteCard from '@/components/RouteCard';
 import AddRouteModal from '@/components/AddRouteModal';
+import ContactModal from '@/components/ContactModal';
+import DeleteModal from '@/components/DeleteModal';
 import { useLocalStorageRoutes } from '@/hooks/useLocalStorageRoutes';
 import { Route } from '@/types';
 
@@ -14,6 +16,10 @@ interface MyRoutesProps {
 export default function MyRoutes({ currentUser }: MyRoutesProps) {
   const [mounted, setMounted] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [route, setRoute] = useState<Route | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [routeToDelete, setRouteToDelete] = useState<Route | null>(null);
   const { allRoutes, myRoutes, saveToLocalStorage } = useLocalStorageRoutes(currentUser);
 
   useEffect(() => {
@@ -39,16 +45,25 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
     setIsAddModalOpen(true);
   }
 
-  const closeAddModal = () => {
+  const closeAddRouteModal = () => {
     setIsAddModalOpen(false);
   }
 
-  const deleteMyRoute = (id: number) => {
-    if (!confirm("Excluir esta rota permanentemente?")) return;
+  const openContactModal = (route: Route) => {
+    setRoute(route);
+    setIsContactModalOpen(true);
+  }
 
-    const updatedRoutes = allRoutes.filter((r) => r.id !== id);
+  const deleteMyRoute = () => {
+    setIsDeleteModalOpen(false);
+    const updatedRoutes = allRoutes.filter((r) => r.id !== routeToDelete?.id);
     saveToLocalStorage(updatedRoutes);
   };
+
+  const openDeleteModal = (route: Route) => {
+    setRouteToDelete(route);
+    setIsDeleteModalOpen(true);
+  }
 
   return (
     <div className="p-6">
@@ -75,8 +90,8 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
             <RouteCard
               key={route.id}
               route={route}
-              onContact={() => {}}
-              onDelete={deleteMyRoute}
+              onContact={openContactModal}
+              onDelete={openDeleteModal}
               isMyRoute={true}
             />
           ))
@@ -86,9 +101,27 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
       {/* Add Route Modal */}
       <AddRouteModal
         isOpen={isAddModalOpen}
-        onClose={closeAddModal}
+        onClose={closeAddRouteModal}
         onSave={saveNewRoute}
       />
-    </div>
+
+      {/* Contact Modal */}
+      {route ? (
+        <ContactModal
+          isOpen={isContactModalOpen}
+          route={route}
+          onClose={() => setIsContactModalOpen(false)}
+        />
+      ) : null}
+
+      {/* Delete Modal */}
+      {routeToDelete ? (
+        <DeleteModal
+          isOpen={isDeleteModalOpen}
+          onCancel={() => setIsDeleteModalOpen(false)}
+          onDelete={deleteMyRoute}
+        />
+      ) : null}
+      </div>
   );
 }

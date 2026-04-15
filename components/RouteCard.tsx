@@ -3,17 +3,18 @@ import { Route } from "@/types";
 
 interface Props {
   route: Route;
+  onDelete?: (route: Route) => void;
   onContact: (route: Route) => void;
-  onDelete?: (id: number) => void;
   isMyRoute?: boolean;
 }
 
 export default function RouteCard({
   route,
-  onContact,
   onDelete,
+  onContact,
   isMyRoute = false
 }: Props) {
+
   return (
     <div className="route-card bg-white rounded-3xl shadow-sm overflow-hidden border border-gray-100">
       <div className="px-6 pt-6 pb-4">
@@ -40,7 +41,7 @@ export default function RouteCard({
       <div className="bg-gray-50 px-6 py-5 border-t flex items-center justify-between">
         <div>
           <p className="font-medium">{route.company}</p>
-          <p className="text-xs text-gray-500">{route.contact}</p>
+          {/* <p className="text-xs text-gray-500">{route.contact}</p> */}
         </div>
 
         <div className="flex items-center gap-3">
@@ -56,7 +57,7 @@ export default function RouteCard({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onDelete(route.id);
+                onDelete(route);
               }}
               className="p-3 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-2xl transition-all cursor-pointer"
             >
