@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Route } from '@/types';
+import { Route } from '@/types/route';
 
 const STORAGE_KEY = 'minhas-rotas';
 

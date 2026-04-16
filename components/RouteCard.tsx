@@ -1,17 +1,19 @@
-import { Phone, Trash2 } from "lucide-react";
-import { Route } from "@/types";
+import { Phone, Trash2, Edit2 } from "lucide-react";
+import { Route } from "@/types/route";
 
 interface Props {
   route: Route;
-  onDelete?: (route: Route) => void;
   onContact: (route: Route) => void;
+  onEdit?: (route: Route) => void;
+  onDelete?: (route: Route) => void;
   isMyRoute?: boolean;
 }
 
 export default function RouteCard({
   route,
-  onDelete,
   onContact,
+  onEdit,
+  onDelete,
   isMyRoute = false
 }: Props) {
 
@@ -41,7 +43,6 @@ export default function RouteCard({
       <div className="bg-gray-50 px-6 py-5 border-t flex items-center justify-between">
         <div>
           <p className="font-medium">{route.company}</p>
-          {/* <p className="text-xs text-gray-500">{route.contact}</p> */}
         </div>
 
         <div className="flex items-center gap-3">
@@ -50,8 +51,17 @@ export default function RouteCard({
             className="bg-white border border-gray-300 hover:bg-gray-100 px-5 py-2.5 rounded-2xl text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer"
           >
             <Phone size={18} />
-            Contatar
+            {!isMyRoute ? "Contato" : ""}
           </button>
+
+          {isMyRoute && onEdit && (
+            <button
+              onClick={(e) => { onEdit(route); }}
+              className="p-3 text-orange-500 hover:text-orange-700 hover:bg-orange-50 rounded-2xl transition-all cursor-pointer"
+            >
+              <Edit2 size={20} />
+            </button>
+          )}
 
           {isMyRoute && onDelete && (
             <button

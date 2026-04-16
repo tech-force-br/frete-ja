@@ -1,6 +1,6 @@
 "use client";
 
-import { Route } from "@/types";
+import { Route } from "@/types/route";
 
 interface Props {
   isOpen: boolean;
@@ -16,18 +16,41 @@ export default function ContactModal({ isOpen, route, onClose }: Props) {
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
 
-
         <div className="px-8 pt-8 pb-2">
           <h3 className="text-2xl font-bold mb-6">Contatos da Transportadora</h3>
 
-          {/* CONTACT */}
+          {/* WhatsApp */}
           <div className="mt-6">
             <label className="block text-sm font-medium mb-1">
-              Contato
+              WhatsApp
             </label>
             <input
-              value={route.contact}
-              className="w-full border border-gray-300 rounded-2xl px-4 py-3"
+              value={route.contactInfo.whatsapp}
+              className="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-gray-50 cursor-default focus:outline-none"
+              readOnly
+            />
+          </div>
+
+          {/* Telefone Fixo */}
+          <div className="mt-6">
+            <label className="block text-sm font-medium mb-1">
+              Telefone Fixo
+            </label>
+            <input
+              value={route.contactInfo.landline}
+              className="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-gray-50 cursor-default focus:outline-none"
+              readOnly
+            />
+          </div>
+
+          {/* Email */}
+          <div className="mt-6">
+            <label className="block text-sm font-medium mb-1">
+              Email
+            </label>
+            <input
+              value={route.contactInfo.email}
+              className="w-full border border-gray-300 rounded-2xl px-4 py-3 bg-gray-50 cursor-default focus:outline-none"
               readOnly
             />
           </div>

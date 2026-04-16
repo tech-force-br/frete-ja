@@ -1,13 +1,4 @@
-export interface Route {
-    id: number;
-    originCity: string;
-    originState: string;
-    destCity: string;
-    destState: string;
-    price: number;
-    company: string;
-    contact: string;
-  }
+import { Route } from "@/types/route";
 
 export const initialRoutes: Route[] = [
   {
@@ -18,7 +9,11 @@ export const initialRoutes: Route[] = [
     destState: "RJ",
     price: 3200,
     company: "Transportes Rapido",
-    contact: "(11) 98765-4321",
+    contactInfo: {
+      whatsapp: "(47) 99999-8754",
+      landline: "(47) 98989-5642",
+      email: "test@test.com"
+    }
   },
   {
     id: 2,
@@ -28,7 +23,11 @@ export const initialRoutes: Route[] = [
     destState: "PR",
     price: 1800,
     company: "Carga Sul",
-    contact: "carga@sul.com.br",
+    contactInfo: {
+      whatsapp: "(47) 99999-8754",
+      landline: "(47) 98989-5642",
+      email: "test@test.com"
+    }
   },
   {
     id: 3,
@@ -38,7 +37,11 @@ export const initialRoutes: Route[] = [
     destState: "DF",
     price: 4500,
     company: "Minas Log",
-    contact: "(31) 99988-7766",
+    contactInfo: {
+      whatsapp: "(47) 99999-8754",
+      landline: "(47) 98989-5642",
+      email: "test@test.com"
+    }
   },
   {
     id: 4,
@@ -48,7 +51,11 @@ export const initialRoutes: Route[] = [
     destState: "SC",
     price: 2200,
     company: "Transportes Rapido",
-    contact: "(11) 98765-4321",
+    contactInfo: {
+      whatsapp: "(47) 99999-8754",
+      landline: "(47) 98989-5642",
+      email: "test@test.com"
+    }
   },
   {
     id: 5,
@@ -58,6 +65,10 @@ export const initialRoutes: Route[] = [
     destState: "PE",
     price: 3800,
     company: "Nordeste Cargas",
-    contact: "(71) 98877-6655",
+    contactInfo: {
+      whatsapp: "(47) 99999-8754",
+      landline: "(47) 98989-5642",
+      email: "test@test.com"
+    }
   },
 ];

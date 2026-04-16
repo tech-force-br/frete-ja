@@ -26,10 +26,10 @@ export default function RouteFilters({
 
   return (
     <div className="bg-white p-6 rounded-3xl shadow-sm mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* Estado de Origem */}
+      {/* ORIGIN STATE */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">
-          Estado de Origem
+          Origem - Estado
         </label>
         <select
           value={originState}
@@ -45,10 +45,10 @@ export default function RouteFilters({
         </select>
       </div>
 
-      {/* Cidade de Origem */}
+      {/* ORIGIN CITY */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">
-          Cidade de Origem
+          Origem - Cidade
         </label>
         <select
           value={originCity}
@@ -69,10 +69,10 @@ export default function RouteFilters({
         </select>
       </div>
 
-      {/* Estado de Destino */}
+      {/* DEST STATE */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">
-          Estado de Destino
+          Destino - Estado
         </label>
         <select
           value={destState}
@@ -88,10 +88,10 @@ export default function RouteFilters({
         </select>
       </div>
 
-      {/* Cidade de Destino */}
+      {/* DEST CITY */}
       <div>
         <label className="block text-sm font-medium text-gray-600 mb-1">
-          Cidade de Destino
+          Destino - Cidade
         </label>
         <select
           value={destCity}

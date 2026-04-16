@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import RouteList from "@/components/RouteList";
 import RouteFilters from "@/components/RouteFilters";
 
-import { initialRoutes } from "@/lib/data";
+import { initialRoutes } from "@/lib/mockedRoutes";
 
 export default function Home() {
   const [originState, setOriginState] = useState("");

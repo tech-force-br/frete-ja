@@ -8,7 +8,7 @@ import AddRouteModal from '@/components/AddRouteModal';
 import ContactModal from '@/components/ContactModal';
 import DeleteModal from '@/components/DeleteModal';
 import { useLocalStorageRoutes } from '@/hooks/useLocalStorageRoutes';
-import { Route } from '@/types';
+import { Route } from '@/types/route';
 
 interface MyRoutesProps {
   currentUser: string;
@@ -54,16 +54,26 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
 
   if (!mounted) return null;
 
-  const saveNewRoute = (newRouteData: Omit<Route, 'id' | 'company'>) => {
-    const newRoute: Route = {
-      id: Date.now(),
+  const saveNewRoute = (newRouteData: Omit<Route, "company">) => {
+    const routeToSave: Route = {
       ...newRouteData,
       company: currentUser,
     };
 
-    const updatedRoutes = [newRoute, ...myRoutes];
-    saveToLocalStorage(updatedRoutes);
+    let updatedRoutes: Route[];
 
+    const existingIndex = myRoutes.findIndex(route => route.id === routeToSave.id);
+
+    if (existingIndex !== -1) {
+      // UPDATE existing route
+      updatedRoutes = [...myRoutes];
+      updatedRoutes[existingIndex] = routeToSave;
+    } else {
+      // ADD new route at the beginning
+      updatedRoutes = [routeToSave, ...myRoutes];
+    }
+
+    saveToLocalStorage(updatedRoutes);
     setIsAddModalOpen(false);
   };
 
@@ -72,12 +82,19 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
   }
 
   const closeAddRouteModal = () => {
+    setRoute(null);
     setIsAddModalOpen(false);
   }
 
   const openContactModal = (route: Route) => {
     setRoute(route);
     setIsContactModalOpen(true);
+  }
+
+  const openRouteEditorModal = (route: Route) => {
+    console.log('openRouteEditorModal', route)
+    setRoute(route);
+    setIsAddModalOpen(true);
   }
 
   const deleteMyRoute = () => {
@@ -129,6 +146,7 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
               key={route.id}
               route={route}
               onContact={openContactModal}
+              onEdit={openRouteEditorModal}
               onDelete={openDeleteModal}
               isMyRoute={true}
             />
@@ -139,6 +157,7 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
       {/* Add Route Modal */}
       <AddRouteModal
         isOpen={isAddModalOpen}
+        route={route}
         onClose={closeAddRouteModal}
         onSave={saveNewRoute}
       />

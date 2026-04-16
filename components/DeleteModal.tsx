@@ -1,6 +1,6 @@
 "use client";
 
-import { Route } from "@/types";
+import { Route } from "@/types/route";
 
 interface Props {
   isOpen: boolean;
