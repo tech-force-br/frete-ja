@@ -47,7 +47,7 @@ export default function ClientLayout({
   }
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Header
         isLoggedIn={isLoggedIn}
         onLogin={handleLogin}
@@ -60,9 +60,11 @@ export default function ClientLayout({
         onSuccessLogin={handleLoginSuccess}
       />
 
-      <main>{children}</main>
+      <main className="flex-1">
+        {children}
+      </main>
 
       <Footer />
-    </>
+    </div>
   );
 }
