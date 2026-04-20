@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import LoginModal from "@/components/LoginModal";
 
 type AppPage = "/" | "/minhas-rotas";
@@ -60,6 +61,8 @@ export default function ClientLayout({
       />
 
       <main>{children}</main>
+
+      <Footer />
     </>
   );
 }
