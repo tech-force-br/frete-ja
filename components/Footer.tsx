@@ -16,7 +16,7 @@ export default function Footer() {
                         className="flex items-center gap-2 text-green-600 hover:text-green-700 font-medium transition-colors"
                     >
                         <img
-                            src={"/whatsapp-icon.png"}
+                            src={"/whatsapp-icon-32.png"}
                             alt="WhatsApp"
                             className="w-5 h-5"
                         />

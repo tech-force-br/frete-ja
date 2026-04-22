@@ -10,7 +10,9 @@ export interface Route {
 };
 
 interface ContactInfo {
+  whatsappDDD: string;
   whatsapp: string;
+  landlineDDD: string;
   landline: string;
   email: string;
 }
