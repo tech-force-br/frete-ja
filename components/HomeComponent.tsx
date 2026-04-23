@@ -3,10 +3,11 @@
 import { useState, useMemo } from "react";
 import RouteList from "@/components/RouteList";
 import RouteFilters from "@/components/RouteFilters";
-
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { initialRoutes } from "@/lib/mockedRoutes";
 
 export default function Home() {
+
   const [originState, setOriginState] = useState("");
   const [originCity, setOriginCity] = useState("");
   const [destState, setDestState] = useState("");
@@ -30,6 +31,14 @@ export default function Home() {
     });
   }, [originState, originCity, destState, destCity]);
 
+  const {
+    visibleItems: visibleRoutes,
+    loadMoreRef,
+  } = useInfiniteScroll(filteredRoutes, {
+    pageSize: 15,
+    resetDeps: [originState, originCity, destState, destCity],
+  });
+
   return (
     <main className="max-w-7xl mx-auto px-6 py-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
@@ -50,7 +59,8 @@ export default function Home() {
         setDestCity={setDestCity}
       />
 
-      <RouteList routes={filteredRoutes} />
+      <RouteList routes={visibleRoutes}/>
+      <div ref={loadMoreRef} className="h-10" />
     </main>
   );
 }

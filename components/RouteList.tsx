@@ -26,13 +26,18 @@ export default function RouteList({ routes }: RouteListProps) {
           <p className="text-gray-500 text-center py-10">Nenhuma rota encontrada com os filtros aplicados.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {routes.map((route) => (
-              <RouteCard
-                key={route.id}
-                route={route}
-                onContact={openContactModal}
-              />
-            ))}
+            {routes.map((route, index) => {
+              return (
+                <div
+                  key={route.id}
+                >
+                  <RouteCard
+                    route={route}
+                    onContact={openContactModal}
+                  />
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

@@ -8,6 +8,7 @@ import AddRouteModal from '@/components/AddRouteModal';
 import ContactModal from '@/components/ContactModal';
 import DeleteModal from '@/components/DeleteModal';
 import { useLocalStorageRoutes } from '@/hooks/useLocalStorageRoutes';
+import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { Route } from '@/types/route';
 
 interface MyRoutesProps {
@@ -47,6 +48,14 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
       return matchesOriginState && matchesOriginCity && matchesDestState && matchesDestCity;
     });
   }, [myRoutes, originState, originCity, destState, destCity]);
+
+  const {
+    visibleItems: visibleRoutes,
+    loadMoreRef,
+  } = useInfiniteScroll(filteredRoutes, {
+    pageSize: 15,
+    resetDeps: [originState, originCity, destState, destCity],
+  });
 
   useEffect(() => {
     setMounted(true);
@@ -136,12 +145,12 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
 
       {/* Routes Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredRoutes.length === 0 ? (
+        {visibleRoutes.length === 0 ? (
           <div className="col-span-3 text-center py-12 text-gray-400">
             <p>Você ainda não tem rotas cadastradas.</p>
           </div>
         ) : (
-          filteredRoutes.map((route) => (
+          visibleRoutes.map((route) => (
             <RouteCard
               key={route.id}
               route={route}
@@ -153,6 +162,8 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
           ))
         )}
       </div>
+
+      <div ref={loadMoreRef} className="h-10" />
 
       {/* Add Route Modal */}
       <AddRouteModal
