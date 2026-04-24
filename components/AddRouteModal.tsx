@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Route } from "@/types/route";
 import { states } from "@/lib/states";
+import { useModalClose } from "@/hooks/useModalClose";
 
 interface Props {
   isOpen: boolean;
@@ -12,6 +13,28 @@ interface Props {
 }
 
 export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props) {
+
+  const resetForm = () => {
+    setForm({
+      id: 0,
+      originState: "",
+      originCity: "",
+      destState: "",
+      destCity: "",
+      price: 0,
+      contactInfo: {
+        whatsappDDD: "",
+        whatsapp: "",
+        landlineDDD: "",
+        landline: "",
+        email: ""
+      },
+    });
+  }
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useModalClose(modalRef, onClose, isOpen, resetForm);
 
   const [error, setError] = useState("");
 
@@ -52,6 +75,8 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
     });
   }, [route]);
 
+  if (!isOpen) return null;
+
   const handleChange = (field: string, value: string | number) => {
     setForm((prev) => {
 
@@ -79,8 +104,6 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
 
     const { originState, originCity, destState, destCity, price } = form;
     const { whatsappDDD, whatsapp, landlineDDD, landline, email } = form.contactInfo;
-
-    console.log('form', form);
 
     if (
         !originState.trim() ||
@@ -126,22 +149,7 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
       contactInfo: form.contactInfo,
     });
 
-    // reset form
-    setForm({
-      id: 0,
-      originState: "",
-      originCity: "",
-      destState: "",
-      destCity: "",
-      price: 0,
-      contactInfo: {
-        whatsappDDD: "",
-        whatsapp: "",
-        landlineDDD: "",
-        landline: "",
-        email: ""
-      },
-    });
+    resetForm();
 
     onClose();
   };
@@ -171,11 +179,11 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+      <div
+        ref={modalRef}
+        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
 
         <form onSubmit={handleSubmit}>
           <div className="px-8 pt-8 pb-2">
@@ -361,7 +369,7 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
           </div>
 
           {error && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-2xl text-sm">
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-2xl text-sm text-center">
               {error}
             </div>
           )}
@@ -372,6 +380,7 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
               type="button"
               onClick={() => {
                 setError("");
+                resetForm();
                 onClose();
               }}
               className="flex-1 py-4 text-gray-600 font-medium border border-gray-300 rounded-2xl hover:bg-gray-50 cursor-pointer"

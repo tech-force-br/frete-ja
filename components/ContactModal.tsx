@@ -1,6 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { Route } from "@/types/route";
+import { useModalClose } from "@/hooks/useModalClose";
 
 interface Props {
   isOpen: boolean;
@@ -10,13 +12,19 @@ interface Props {
 
 export default function ContactModal({ isOpen, route, onClose }: Props) {
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useModalClose(modalRef, onClose, isOpen);
+
   if (!isOpen) return null;
 
   const whatsappLink = `https://wa.me/55${route.contactInfo.whatsappDDD}${route.contactInfo.whatsapp}`;
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
+      <div
+        ref={modalRef}
+        className="bg-white rounded-3xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden">
 
         <div className="px-8 pt-8 pb-2">
           <h3 className="text-2xl font-bold mb-6">Contatos</h3>

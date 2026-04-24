@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useModalClose } from "@/hooks/useModalClose";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -13,8 +14,13 @@ export default function LoginModal({
   onClose,
   onSuccessLogin,
 }: LoginModalProps) {
+
   const [company, setCompany] = useState("");
   const [password, setPassword] = useState("");
+
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useModalClose(modalRef, onClose, isOpen);
 
   if (!isOpen) return null;
 
@@ -36,7 +42,9 @@ export default function LoginModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+      <div
+        ref={modalRef}
+        className="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
         <div className="px-8 pt-8 pb-6">
           <h3 className="text-2xl font-bold mb-1">Entrar como Empresa</h3>
           <p className="text-gray-500">Acesse sua conta para gerenciar rotas</p>

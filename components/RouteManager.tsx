@@ -101,7 +101,6 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
   }
 
   const openRouteEditorModal = (route: Route) => {
-    console.log('openRouteEditorModal', route)
     setRoute(route);
     setIsAddModalOpen(true);
   }
@@ -186,7 +185,7 @@ export default function MyRoutes({ currentUser }: MyRoutesProps) {
       {routeToDelete ? (
         <DeleteModal
           isOpen={isDeleteModalOpen}
-          onCancel={() => setIsDeleteModalOpen(false)}
+          onClose={() => setIsDeleteModalOpen(false)}
           onDelete={deleteMyRoute}
         />
       ) : null}
