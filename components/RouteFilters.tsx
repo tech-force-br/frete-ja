@@ -34,7 +34,7 @@ export default function RouteFilters({
         <select
           value={originState}
           onChange={(e) => setOriginState(e.target.value)}
-          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white"
+          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white cursor-pointer"
         >
           <option value="">Todos os estados</option>
           {states.map((state) => (
@@ -53,7 +53,7 @@ export default function RouteFilters({
         <select
           value={originCity}
           onChange={(e) => setOriginCity(e.target.value)}
-          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white"
+          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white cursor-pointer"
         >
           <option value="">Todas as cidades</option>
           {originState &&
@@ -77,7 +77,7 @@ export default function RouteFilters({
         <select
           value={destState}
           onChange={(e) => setDestState(e.target.value)}
-          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white"
+          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white cursor-pointer"
         >
           <option value="">Todos os estados</option>
           {states.map((state) => (
@@ -96,7 +96,7 @@ export default function RouteFilters({
         <select
           value={destCity}
           onChange={(e) => setDestCity(e.target.value)}
-          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white"
+          className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:border-blue-500 bg-white cursor-pointer"
         >
           <option value="">Todas as cidades</option>
           {destState &&

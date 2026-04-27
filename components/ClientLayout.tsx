@@ -6,8 +6,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LoginModal from "@/components/LoginModal";
 
-type AppPage = "/" | "/minhas-rotas";
-
 export default function ClientLayout({
   children,
 }: {
@@ -16,10 +14,8 @@ export default function ClientLayout({
 
   const router = useRouter();
 
-  const [currentPage, setCurrentPage] = useState<AppPage>("/");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [companyName, setCompanyName] = useState("");
 
   function handleLogin() {
     setShowLoginModal(true);
@@ -27,12 +23,10 @@ export default function ClientLayout({
 
   function handleLogout() {
     setIsLoggedIn(false);
-    setCurrentPage("/");
     router.push("/");
   }
 
   function handleLoginSuccess(company: string) {
-    setCompanyName(company);
     setIsLoggedIn(true);
     setShowLoginModal(false);
 
