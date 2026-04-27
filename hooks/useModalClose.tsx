@@ -1,16 +1,23 @@
 import { useEffect, RefObject } from "react";
 
+type ModalMode = "login" | "signup";
+
 export function useModalClose(
   modalRef: RefObject<HTMLElement | null>,
   onClose: () => void,
   isOpen: boolean,
-  resetForm?: () => void
+  resetForm?: () => void,
+  resetMode?: (mode: ModalMode) => void,
+  modeValue?: ModalMode
 ) {
   useEffect(() => {
     if (!isOpen) return;
 
     function handleClose() {
       resetForm?.();
+      if (resetMode && modeValue) {
+        resetMode(modeValue);
+      }
       onClose();
     }
 

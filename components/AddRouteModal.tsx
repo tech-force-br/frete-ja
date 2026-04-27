@@ -137,6 +137,25 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
       return;
     }
 
+    if (whatsapp.trim() && whatsapp.length < 8) {
+      setError("Informe um número de WhatsApp válido.");
+      return;
+    }
+
+    if (landline.trim() && landline.length < 8) {
+      setError("Informe um número fixo válido.");
+      return;
+    }
+
+    if (email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+      if (!emailRegex.test(email)) {
+        setError("Informe um e-mail válido.");
+        return;
+      }
+    }
+
     setError("");
 
     onSave({
@@ -154,29 +173,33 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
     onClose();
   };
 
-  const allowOnlyNumbersKeys = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowedKeys = [
-      "Backspace",
-      "Delete",
-      "Tab",
-      "ArrowLeft",
-      "ArrowRight",
-      "Home",
-      "End",
-    ];
+  const formatWhatsapp = (propertyName: string, value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 9);
 
-    if (allowedKeys.includes(e.key)) return;
+    let formatted = digits;
 
-    if (!/^\d$/.test(e.key)) {
-      e.preventDefault();
+    if (digits.length > 4 && digits.length <= 8) {
+      formatted = `${digits.slice(0, 4)}-${digits.slice(4)}`;
     }
+
+    if (digits.length > 8) {
+      formatted = `${digits.slice(0, 5)}-${digits.slice(5)}`;
+    }
+
+    handleChange(propertyName, formatted);
   };
 
-  const preventNonNumericPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const text = e.clipboardData.getData("text");
-    if (!/^\d+$/.test(text)) {
-      e.preventDefault();
+  const formatLandline = (propertyName: string, value: string) => {
+
+    const digits = value.replace(/\D/g, "").slice(0, 8);
+
+    let formatted = digits;
+
+    if (digits.length > 4) {
+      formatted = `${digits.slice(0, 4)}-${digits.slice(4)}`;
     }
+
+    handleChange(propertyName, formatted);
   };
 
   return (
@@ -302,9 +325,7 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
                 {/* DDD */}
                 <input
                   value={form.contactInfo.whatsappDDD}
-                  onChange={(e) => handleChange("contactInfo.whatsappDDD", e.target.value)}
-                  onKeyDown={allowOnlyNumbersKeys}
-                  onPaste={preventNonNumericPaste}
+                  onChange={(e) => handleChange("contactInfo.whatsappDDD", e.target.value.replace(/\D/g, "").slice(0, 2))}
                   placeholder="DDD"
                   maxLength={2}
                   className="w-20 border border-gray-300 rounded-2xl px-3 py-3 text-center"
@@ -313,11 +334,8 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
                 {/* Number */}
                 <input
                   value={form.contactInfo.whatsapp}
-                  onChange={(e) => handleChange("contactInfo.whatsapp", e.target.value)}
-                  onKeyDown={allowOnlyNumbersKeys}
-                  onPaste={preventNonNumericPaste}
-                  placeholder="999995555"
-                  maxLength={9}
+                  onChange={(e) => formatWhatsapp("contactInfo.whatsapp", e.target.value)}
+                  placeholder="99999-5555"
                   className="flex-1 border border-gray-300 rounded-2xl px-4 py-3"
                 />
               </div>
@@ -333,9 +351,7 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
                 {/* DDD */}
                 <input
                   value={form.contactInfo.landlineDDD}
-                  onChange={(e) => handleChange("contactInfo.landlineDDD", e.target.value)}
-                  onKeyDown={allowOnlyNumbersKeys}
-                  onPaste={preventNonNumericPaste}
+                  onChange={(e) => handleChange("contactInfo.landlineDDD", e.target.value.replace(/\D/g, "").slice(0, 2))}
                   placeholder="DDD"
                   maxLength={2}
                   className="w-20 border border-gray-300 rounded-2xl px-3 py-3 text-center"
@@ -344,11 +360,8 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
                 {/* Number */}
                 <input
                   value={form.contactInfo.landline}
-                  onChange={(e) => handleChange("contactInfo.landline", e.target.value)}
-                  onKeyDown={allowOnlyNumbersKeys}
-                  onPaste={preventNonNumericPaste}
-                  placeholder="999995555"
-                  maxLength={9}
+                  onChange={(e) => formatLandline("contactInfo.landline", e.target.value)}
+                  placeholder="3434-7777"
                   className="flex-1 border border-gray-300 rounded-2xl px-4 py-3"
                 />
               </div>
@@ -362,7 +375,7 @@ export default function AddRouteModal({ isOpen, route, onClose, onSave }: Props)
               <input
                 value={form.contactInfo.email}
                 onChange={(e) => handleChange("contactInfo.email", e.target.value)}
-                placeholder="email@empresa.com"
+                placeholder="exemplo@empresa.com"
                 className="w-full border border-gray-300 rounded-2xl px-4 py-3"
               />
             </div>
