@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useModalClose } from "@/hooks/useModalClose";
 import { isValidCPF, isValidCNPJ } from "@/utils/documentValidator";
+import OTPInput from "@/components/OTPInput";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface LoginModalProps {
 }
 
 type ModalMode = "login" | "signup";
+type SignupStep = "form" | "verify" | "password";
 
 export default function LoginModal({
   isOpen,
@@ -32,6 +34,12 @@ export default function LoginModal({
   const [ddd, setDDD] = useState("");
   const [phone, setPhoneState] = useState("");
 
+  // Signup steps
+  const [signupStep, setSignupStep] = useState<SignupStep>("form");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const resetForm = () => {
     setEmail("");
     setPassword("");
@@ -42,6 +50,10 @@ export default function LoginModal({
     setPhone("");
     setDDD("");
     setShowPassword(false);
+    setVerificationCode("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setSignupStep("form");
   };
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -66,6 +78,45 @@ export default function LoginModal({
 
   const setPhone = (value: string) => {
     setPhoneState(value.replace(/\D/g, "").slice(0, 9));
+  };
+
+  const switchToLogin = () => {
+    setMode("login");
+    resetForm();
+  };
+
+  const switchToSignup = () => {
+    setMode("signup");
+    resetForm();
+  };
+
+  const formatCNPJ = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 14);
+    return digits
+      .replace(/^(\d{2})(\d)/, "$1.$2")
+      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+      .replace(/\.(\d{3})(\d)/, ".$1/$2")
+      .replace(/(\d{4})(\d)/, "$1-$2");
+  };
+
+  const formatCPF = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    return digits
+      .replace(/^(\d{3})(\d)/, "$1.$2")
+      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+      .replace(/\.(\d{3})(\d)/, ".$1-$2");
+  };
+
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 9);
+
+    if (digits.length <= 4) return digits;
+
+    if (digits.length <= 8) {
+      return digits.replace(/(\d{4})(\d+)/, "$1-$2");
+    }
+
+    return digits.replace(/(\d{5})(\d+)/, "$1-$2");
   };
 
   const handleLogin = () => {
@@ -122,57 +173,45 @@ export default function LoginModal({
 
     setError("");
 
-    alert("Cadastro em desenvolvimento - Campos recebidos com sucesso!");
-    console.log({
-      cnpj,
-      corporateEmail,
-      fullName,
-      cpf,
-      ddd,
-      phone,
-    });
+    // simulate sending email
+    console.log("Verification code sent to:", corporateEmail);
 
-    switchToLogin();
-    onClose();
+    // go to verification step
+    setSignupStep("verify");
   };
 
-  const switchToLogin = () => {
-    setMode("login");
-    resetForm();
-  };
-
-  const switchToSignup = () => {
-    setMode("signup");
-    resetForm();
-  };
-
-  const formatCNPJ = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 14);
-    return digits
-      .replace(/^(\d{2})(\d)/, "$1.$2")
-      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/\.(\d{3})(\d)/, ".$1/$2")
-      .replace(/(\d{4})(\d)/, "$1-$2");
-  };
-
-  const formatCPF = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    return digits
-      .replace(/^(\d{3})(\d)/, "$1.$2")
-      .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-      .replace(/\.(\d{3})(\d)/, ".$1-$2");
-  };
-
-  const formatPhone = (value: string) => {
-    const digits = value.replace(/\D/g, "").slice(0, 9);
-
-    if (digits.length <= 4) return digits;
-
-    if (digits.length <= 8) {
-      return digits.replace(/(\d{4})(\d+)/, "$1-$2");
+  const handleVerifyCode = () => {
+    if (verificationCode.length !== 6) {
+      setError("Digite o código de 6 dígitos.");
+      return;
     }
 
-    return digits.replace(/(\d{5})(\d+)/, "$1-$2");
+    // fake code validation
+    if (verificationCode !== "123456") {
+      setError("Código inválido. Use 123456 para teste.");
+      return;
+    }
+
+    setError("");
+    setSignupStep("password");
+  };
+
+  const handleCreatePassword = () => {
+    if (newPassword.length < 6) {
+      setError("A senha deve ter no mínimo 6 caracteres.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError("As senhas não coincidem.");
+      return;
+    }
+
+    setError("");
+
+    alert("Conta criada com sucesso!");
+    switchToLogin();
+    onClose();
   };
 
   return (
@@ -183,14 +222,21 @@ export default function LoginModal({
       >
         {/* Header */}
         <div className="px-8 pt-8 pb-6">
-          <h3 className="text-2xl font-bold mb-1">
-            {mode === "login" ? "Entrar como Empresa" : "Criar Conta"}
-          </h3>
-          <p className="text-gray-500">
-            {mode === "login"
-              ? "Acesse sua conta para gerenciar rotas"
-              : "Preencha os dados para cadastrar sua empresa"}
-          </p>
+        <h3 className="text-2xl font-bold mb-1">
+          {mode === "login" && "Entrar como Empresa"}
+
+          {mode === "signup" && signupStep === "form" && "Criar Conta"}
+          {mode === "signup" && signupStep === "verify" && "Verifique seu Email"}
+          {mode === "signup" && signupStep === "password" && "Crie sua Senha"}
+        </h3>
+
+        <p className="text-gray-500">
+          {mode === "login" && "Acesse sua conta para gerenciar rotas"}
+          {mode === "signup" && signupStep === "form" &&
+            "Preencha os dados para cadastrar sua empresa"}
+          {mode === "signup" && signupStep === "password" &&
+            "Defina uma senha segura para acessar sua conta"}
+        </p>
 
           {/* ==================== LOGIN FORM ==================== */}
           {mode === "login" && (
@@ -238,7 +284,7 @@ export default function LoginModal({
           )}
 
           {/* ==================== SIGNUP FORM ==================== */}
-          {mode === "signup" && (
+          {mode === "signup" && signupStep === "form" && (
             <div className="mt-8 space-y-5">
               <div>
                 <label className="block text-sm font-medium mb-1">CNPJ</label>
@@ -307,6 +353,51 @@ export default function LoginModal({
               </div>
             </div>
           )}
+
+          {/* ==================== CODE VERIFICATION ==================== */}
+          {mode === "signup" && signupStep === "verify" && (
+            <div className="mt-8 space-y-5 text-center">
+              <p className="text-gray-500 text-sm">
+                Enviamos um código de verificação para
+                <br />
+                <span className="font-medium">{corporateEmail}</span>
+              </p>
+
+              <OTPInput
+                value={verificationCode}
+                onChange={setVerificationCode}
+              />
+
+              <button
+                onClick={() => alert("Reenviar email em breve")}
+                className="text-sm text-blue-600 hover:underline cursor-pointer"
+              >
+                Reenviar código
+              </button>
+            </div>
+          )}
+
+          {/* ==================== PASSWORD CREATION ==================== */}
+          {mode === "signup" && signupStep === "password" && (
+            <div className="mt-8 space-y-5">
+
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Senha"
+                className="w-full border border-gray-300 rounded-2xl px-5 py-4"
+              />
+
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirmar senha"
+                className="w-full border border-gray-300 rounded-2xl px-5 py-4"
+              />
+            </div>
+          )}
         </div>
 
         {error && (
@@ -329,10 +420,21 @@ export default function LoginModal({
           </button>
 
           <button
-            onClick={mode === "login" ? handleLogin : handleSignUp}
+            onClick={() => {
+              if (mode === "login") return handleLogin();
+              if (signupStep === "form") return handleSignUp();
+              if (signupStep === "verify") return handleVerifyCode();
+              if (signupStep === "password") return handleCreatePassword();
+            }}
             className="flex-1 py-5 bg-blue-600 text-white font-semibold hover:bg-blue-700 active:bg-blue-800 transition-colors cursor-pointer"
           >
-            {mode === "login" ? "Entrar" : "Cadastrar"}
+            {mode === "login"
+              ? "Entrar"
+              : signupStep === "form"
+              ? "Cadastrar"
+              : signupStep === "verify"
+              ? "Verificar código"
+              : "Criar senha"}
           </button>
         </div>
 
