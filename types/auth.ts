@@ -1,0 +1,1 @@
+export type ModalMode = "login" | "signup" | "forgot";

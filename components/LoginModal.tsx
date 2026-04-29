@@ -1,18 +1,19 @@
 "use client";
 
+import { ArrowLeft, CheckCircle2, XCircle } from "lucide-react";
 import { useState, useRef } from "react";
 import { useModalClose } from "@/hooks/useModalClose";
 import { isValidCPF, isValidCNPJ } from "@/utils/documentValidator";
 import OTPInput from "@/components/OTPInput";
+import { ModalMode } from "@/types/auth";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccessLogin: (company: string) => void;
 }
-
-type ModalMode = "login" | "signup";
 type SignupStep = "form" | "verify" | "password";
+type ForgotStep = "form" | "sent";
 
 export default function LoginModal({
   isOpen,
@@ -26,6 +27,10 @@ export default function LoginModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Password reset
+  const [forgotStep, setForgotStep] = useState<ForgotStep>("form");
+  const [resetEmail, setResetEmail] = useState("");
+
   // Signup fields
   const [cnpj, setCNPJState] = useState("");
   const [corporateEmail, setCorporateEmail] = useState("");
@@ -38,7 +43,9 @@ export default function LoginModal({
   const [signupStep, setSignupStep] = useState<SignupStep>("form");
   const [verificationCode, setVerificationCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const resetForm = () => {
     setEmail("");
@@ -53,7 +60,11 @@ export default function LoginModal({
     setVerificationCode("");
     setNewPassword("");
     setConfirmPassword("");
+    setShowConfirmPassword(false);
+    setShowNewPassword(false);
     setSignupStep("form");
+    setResetEmail("");
+    setForgotStep("form")
   };
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -85,10 +96,35 @@ export default function LoginModal({
     resetForm();
   };
 
+  const switchToForgotPassword = () => {
+    setMode("forgot");
+    setError("");
+  };
+
   const switchToSignup = () => {
     setMode("signup");
     resetForm();
   };
+
+  const handleResetPassword = () => {
+    if (!resetEmail.trim()) {
+      setError("Digite seu email.");
+      return;
+    }
+
+    if (!validateEmailFormat(resetEmail)) {
+      setError("Informe um e-mail válido.");
+      return;
+    }
+
+    setError("");
+    setForgotStep("sent");
+  };
+
+  const validateEmailFormat = (emailToValidate: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    return emailRegex.test(emailToValidate);
+  }
 
   const formatCNPJ = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 14);
@@ -153,9 +189,7 @@ export default function LoginModal({
     }
 
     if (corporateEmail.trim()) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-      if (!emailRegex.test(corporateEmail)) {
+      if (!validateEmailFormat(corporateEmail)) {
         setError("Informe um e-mail válido.");
         return;
       }
@@ -180,13 +214,26 @@ export default function LoginModal({
     setSignupStep("verify");
   };
 
+  const handleBackStep = () => {
+    if (signupStep === "verify") {
+      setSignupStep("form");
+      setError("");
+    } else if (signupStep === "password") {
+      setSignupStep("verify");
+      setError("");
+    } else if (forgotStep === "sent") {
+      console.log('sent');
+      setForgotStep("form");
+      setError("");
+    }
+  };
+
   const handleVerifyCode = () => {
     if (verificationCode.length !== 6) {
       setError("Digite o código de 6 dígitos.");
       return;
     }
 
-    // fake code validation
     if (verificationCode !== "123456") {
       setError("Código inválido. Use 123456 para teste.");
       return;
@@ -197,8 +244,12 @@ export default function LoginModal({
   };
 
   const handleCreatePassword = () => {
-    if (newPassword.length < 6) {
-      setError("A senha deve ter no mínimo 6 caracteres.");
+    if (
+      !passwordRules.length ||
+      !passwordRules.upperLower ||
+      !passwordRules.number
+    ) {
+      setError("Sua senha não atende aos requisitos.");
       return;
     }
 
@@ -212,6 +263,47 @@ export default function LoginModal({
     alert("Conta criada com sucesso!");
     switchToLogin();
     onClose();
+    onSuccessLogin(cnpj);
+  };
+
+  const passwordRules = {
+    length: newPassword.length >= 8,
+    upperLower: /[a-z]/.test(newPassword) && /[A-Z]/.test(newPassword),
+    number: /\d/.test(newPassword),
+  };
+
+  const hasStartedTypingPassword = newPassword.length > 0;
+
+  const RequirementRow = ({
+    valid,
+    startedTyping,
+    text,
+  }: {
+    valid: boolean;
+    startedTyping: boolean;
+    text: string;
+  }) => {
+
+    let icon = (
+      <CheckCircle2 className="w-5 h-5 text-gray-300" />
+    );
+
+    if (startedTyping && !valid) {
+      icon = <XCircle className="w-5 h-5 text-red-500" />;
+    }
+
+    if (valid) {
+      icon = <CheckCircle2 className="w-5 h-5 text-green-500" />;
+    }
+
+    return (
+      <div className="flex items-center gap-2 text-sm">
+        {icon}
+        <span className={valid ? "text-gray-700" : "text-gray-500"}>
+          {text}
+        </span>
+      </div>
+    );
   };
 
   return (
@@ -222,21 +314,27 @@ export default function LoginModal({
       >
         {/* Header */}
         <div className="px-8 pt-8 pb-6">
-        <h3 className="text-2xl font-bold mb-1">
-          {mode === "login" && "Entrar como Empresa"}
+          <div className="flex items-center gap-3">
+            {mode === "signup" && signupStep === "verify" || forgotStep === "sent" ? (
+              <button
+                onClick={handleBackStep}
+                className="p-2 rounded-full border border-gray-200 hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-700" />
+              </button>
+            ) : null}
 
-          {mode === "signup" && signupStep === "form" && "Criar Conta"}
-          {mode === "signup" && signupStep === "verify" && "Verifique seu Email"}
-          {mode === "signup" && signupStep === "password" && "Crie sua Senha"}
-        </h3>
+            <h3 className="text-2xl font-bold mb-1">
+              {mode === "login" && "Entrar como Empresa"}
 
-        <p className="text-gray-500">
-          {mode === "login" && "Acesse sua conta para gerenciar rotas"}
-          {mode === "signup" && signupStep === "form" &&
-            "Preencha os dados para cadastrar sua empresa"}
-          {mode === "signup" && signupStep === "password" &&
-            "Defina uma senha segura para acessar sua conta"}
-        </p>
+              {mode === "signup" && signupStep === "form" && "Criar Conta"}
+              {mode === "signup" && signupStep === "verify" && "Verifique seu Email"}
+              {mode === "signup" && signupStep === "password" && "Crie sua Senha"}
+
+              {mode === "forgot" && forgotStep === "form" && "Recuperar Senha"}
+              {mode === "forgot" && forgotStep === "sent" && "Email Enviado"}
+            </h3>
+          </div>
 
           {/* ==================== LOGIN FORM ==================== */}
           {mode === "login" && (
@@ -274,11 +372,59 @@ export default function LoginModal({
 
               <div className="text-right">
                 <button
-                  onClick={() => alert("Recuperação de senha em desenvolvimento")}
+                  onClick={switchToForgotPassword}
                   className="text-sm text-blue-600 hover:text-blue-700 hover:underline cursor-pointer"
                 >
                   Esqueci minha senha
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* ==================== FORGOT PASSWORD ==================== */}
+          {mode === "forgot" && forgotStep === "form" && (
+            <div className="mt-8 space-y-5">
+              <p className="text-sm text-gray-500">
+                Informe seu email e enviaremos um link para redefinir sua senha.
+              </p>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <input
+                  type="email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  placeholder="exemplo@empresa.com"
+                  className="w-full border border-gray-300 rounded-2xl px-5 py-4 focus:outline-none focus:border-blue-500 transition-colors"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ==================== EMAIL SENT SUCCESS ==================== */}
+          {mode === "forgot" && forgotStep === "sent" && (
+            <div className="mt-8 mb-6 text-center space-y-6">
+
+              {/* Success icon */}
+              <div className="w-16 h-16 mx-auto rounded-full bg-green-50 flex items-center justify-center">
+                <CheckCircle2 className="w-9 h-9 text-green-600" />
+              </div>
+
+              {/* Message */}
+              <div className="space-y-2">
+                <h4 className="text-lg font-semibold">Verifique seu email</h4>
+
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  Enviamos um link de recuperação para
+                  <br />
+                  <span className="font-medium text-gray-700">{resetEmail}</span>
+                </p>
+
+                <p className="text-sm text-gray-500">
+                  Abra seu email e clique no link para criar uma nova senha.
+                  <br />
+                  O link expira em alguns minutos.
+                </p>
               </div>
             </div>
           )}
@@ -379,24 +525,68 @@ export default function LoginModal({
 
           {/* ==================== PASSWORD CREATION ==================== */}
           {mode === "signup" && signupStep === "password" && (
-            <div className="mt-8 space-y-5">
+            <>
+              <div className="mt-8 space-y-5">
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Senha"
+                    className="w-full border border-gray-300 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 px-2 py-1 rounded-lg text-sm font-medium cursor-pointer"
+                  >
+                    {showNewPassword ? "Ocultar" : "Mostrar"}
+                  </button>
+                </div>
 
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Senha"
-                className="w-full border border-gray-300 rounded-2xl px-5 py-4"
-              />
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirmar senha"
+                    className="w-full border border-gray-300 rounded-2xl px-5 py-4 pr-14 focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 px-2 py-1 rounded-lg text-sm font-medium cursor-pointer"
+                  >
+                    {showConfirmPassword ? "Ocultar" : "Mostrar"}
+                  </button>
+                </div>
+              </div>
 
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirmar senha"
-                className="w-full border border-gray-300 rounded-2xl px-5 py-4"
-              />
-            </div>
+              {/* PASSWORD REQUIREMENTS */}
+              <div className="space-y-2 mt-8">
+                <p className="text-sm font-medium text-gray-700">
+                  Sua senha deve:
+                </p>
+
+                <RequirementRow
+                  valid={passwordRules.length}
+                  startedTyping={hasStartedTypingPassword}
+                  text="Ter mais de 8 caracteres"
+                />
+
+                <RequirementRow
+                  valid={passwordRules.upperLower}
+                  startedTyping={hasStartedTypingPassword}
+                  text="Conter letra maiúscula e minúscula"
+                />
+
+                <RequirementRow
+                  valid={passwordRules.number}
+                  startedTyping={hasStartedTypingPassword}
+                  text="Conter um número"
+                />
+              </div>
+            </>
           )}
         </div>
 
@@ -422,6 +612,7 @@ export default function LoginModal({
           <button
             onClick={() => {
               if (mode === "login") return handleLogin();
+              if (mode === "forgot") return handleResetPassword();
               if (signupStep === "form") return handleSignUp();
               if (signupStep === "verify") return handleVerifyCode();
               if (signupStep === "password") return handleCreatePassword();
@@ -430,6 +621,10 @@ export default function LoginModal({
           >
             {mode === "login"
               ? "Entrar"
+              : mode === "forgot" && forgotStep === "form"
+              ? "Enviar link"
+              : mode === "forgot" && forgotStep === "sent"
+              ? "Reenviar email"
               : signupStep === "form"
               ? "Cadastrar"
               : signupStep === "verify"

@@ -1,6 +1,5 @@
 import { useEffect, RefObject } from "react";
-
-type ModalMode = "login" | "signup";
+import { ModalMode } from "@/types/auth";
 
 export function useModalClose(
   modalRef: RefObject<HTMLElement | null>,
